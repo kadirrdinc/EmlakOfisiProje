@@ -1,0 +1,201 @@
+﻿@model EO.Web.UI.Areas.Admin.ViewModel.AgentViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div style="margin-top:30px;">
+    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+        <i class="fas fa-plus"></i> Ekle
+    </button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Emlakçı Kayıt</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form asp-route="~/Admin/Agent/Create" id="createdForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputFirstName">Ad</label>
+                                    <input class="form-control" id="inputFirstName" type="text" asp-for="@Model.Agent.FirstName" required />
+                                    <span asp-validation-for="@Model.Agent.FirstName" class="text-danger"></span>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputLastName">Soyad</label>
+                                    <input class="form-control" id="inputLastName" type="text" asp-for="@Model.Agent.LastName" required />
+                                    <span asp-validation-for="@Model.Agent.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="small mb-1" for="inputCompanyName">Firma Adı</label>
+                            <input class="form-control" id="inputCompanyName" type="text" asp-for="@Model.Agent.CompanyName" required />
+                            <span asp-validation-for="@Model.Agent.CompanyName" class="text-danger"></span>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputUserName">Kullanıcı Adı</label>
+                                    <input class="form-control" id="inputUserName" type="text" asp-for="@Model.Agent.UserName" required />
+                                    <span asp-validation-for="@Model.Agent.UserName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputRole">Rol</label>
+                                    <select class="form-control" id="iputRole" asp-for="@Model.Agent.Role" required>
+                                        <option selected value="Agent">Emlakçı</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.Agent.Role" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputPassword">Şifre</label>
+                                    <input class="form-control" id="inputPassword" type="password" asp-for="@Model.Agent.Password" required />
+                                    <span asp-validation-for="@Model.Agent.Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="inputConfirmPassword">Şifre Tekrar</label>
+                                    <input class="form-control" id="inputConfirmPassword" type="password" asp-for="@Model.Agent.ConfirmPassword" required />
+                                    <span asp-validation-for="@Model.Agent.ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Kapat</button>
+                            <input type="submit" class="btn btn-sm btn-success" id="btnSave" value="Kaydet" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Emlakçı Listesi
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm" id="tblAgent" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>AD SOYAD</th>
+                            <th>KULLANICI ADI</th>
+                            <th>FİRMA ADI</th>
+                            <th>AKTİF / PASİF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var agent in Model.Agents)
+                        {
+                            <tr>
+                                <td>@(agent.FirstName + " " + agent.LastName)</td>
+                                <td>@(agent.UserName)</td>
+                                <td>@(agent.CompanyName)</td>
+                                <td>
+                                    @if (agent.IsActive != true)
+                                    {
+                                        <button class="btn btn-sm btn-danger btnDelete" id=@agent.Id>Pasif</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-success btnDelete" id=@agent.Id>Aktif</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.btnDelete').on('click', function () {
+                var id = $(this).attr('id');
+                swal({
+                    title: "Güncellemek istediğinizden emin misiniz ?",
+                    icon: "info",
+                    buttons: ["İptal", "Güncelle"],
+                    dangerMode: true,
+                    closeOnEsc: false,
+                    closeOnClickOutside: false,
+                }).then(function (isConfirm) {
+                    if (!isConfirm) return;
+
+                    $.ajax({
+                        type: 'post',
+                        url: '/Admin/Agent/Delete',
+                        data: { 'id': id },
+                        dataType: 'Json',
+                        success: function (data) {
+                            if (data.IsSuccess) {
+                                swal({
+                                    title: data.Message,
+                                    text: "Yönlendiriliyorsunuz",
+                                    icon: "success",
+                                    buttons: false,
+                                    closeOnClickOutside: false,
+                                    closeOnEsc: false,
+                                    timer: 2000,
+                                });
+                                setTimeout(function () {
+                                    window.location.href = "/Admin/Home/Index";
+                                }, 2000);
+                            }
+                        },
+                        error: function (d) {
+                            alert(d);
+                        }
+                    });
+                })
+            });
+
+            $('#createdForm').submit(function (e) {
+                e.preventDefault();
+                debugger;
+                $.ajax({
+                    type: 'post',
+                    url: '/Admin/Agent/Create',
+                    data: $('#createdForm').serialize(),
+                    success: function (data) {
+                        debugger;
+                        if (data.IsSuccess) {
+                            debugger;
+                            $('#btnSave').attr("disabled", true);
+                            toastr["success"](data.Message);
+                            setTimeout(function () {
+                                window.location.href = "/Admin/Home/Index";
+                            }, 2000);
+                        }
+                        else {
+                            toastr["error"](data.Message);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

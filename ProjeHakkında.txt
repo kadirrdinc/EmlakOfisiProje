@@ -1,0 +1,7 @@
+Admin Kullanıcı Adı : admin
+Şifre : 123456
+
+Emlakçı Kullanıcı Adı: emlakci
+Şifre : 123456
+
+Dilerseniz yeni admin kaydı yapabilirsiniz. Emlakçı kaydı sadece admin tarafından yapılmaktadır.

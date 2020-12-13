@@ -1,0 +1,122 @@
+﻿@model EO.Web.UI.ViewModel.NoticeViewModel
+@{
+    ViewData["Title"] = "İLANLARIM";
+}
+
+<div style="margin-top:30px;">
+    <a href="~/Notice/Create" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Ekle</a>
+    <p></p>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            İlanlarım
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm" id="tblAgent" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>AÇIKLAMA</th>
+                            <th>ADRES</th>
+                            <th>İLAN TARİHİ</th>
+                            <th>DURUM</th>
+                            <th>EMLAK TİPİ</th>
+                            <th>FİYAT</th>
+                            <th>m²</th>
+                            <th>ODA SAYISI</th>
+                            <th>BİNA YAŞI</th>
+                            <th>EŞYALI MI ?</th>
+                            <th>İLAN DURUMU</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var notice in Model.Notices)
+                        {
+                            <tr>
+                                <td>@notice.Description</td>
+                                <td>@notice.Address</td>
+                                <td>@notice.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
+                                <td>@notice.StatusType</td>
+                                <td>@notice.HouseType</td>
+                                <td>@notice.Price</td>
+                                <td>@notice.SquareMeter</td>
+                                <td>@notice.NumberOfRooms</td>
+                                <td>@notice.HouseAge</td>
+                                <td>
+                                    @if (notice.IsFurnished)
+                                    {
+                                        @Html.Raw("Evet");
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("Hayır");
+                                    }
+                                </td>
+                                <td>
+                                    @if (notice.IsActive != true)
+                                    {
+                                        <button class="btn btn-sm btn-danger btnDelete" id=@notice.Id>Pasif</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-success btnDelete" id=@notice.Id>Aktif</button>
+                                    }
+                                    <a class="btn btn-warning btn-sm" href="~/Notice/Edit/@notice.Id">Düzenle</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.btnDelete').on('click', function () {
+                var id = $(this).attr('id');
+                swal({
+                    title: "Güncellemek istediğinizden emin misiniz ?",
+                    icon: "info",
+                    buttons: ["İptal", "Güncelle"],
+                    dangerMode: true,
+                    closeOnEsc: false,
+                    closeOnClickOutside: false,
+                }).then(function (isConfirm) {
+                    if (!isConfirm) return;
+
+                    $.ajax({
+                        type: 'post',
+                        url: '/Notice/Delete',
+                        data: { 'id': id },
+                        dataType: 'Json',
+                        success: function (data) {
+                            if (data.IsSuccess) {
+                                swal({
+                                    title: data.Message,
+                                    text: "Yönlendiriliyorsunuz",
+                                    icon: "success",
+                                    buttons: false,
+                                    closeOnClickOutside: false,
+                                    closeOnEsc: false,
+                                    timer: 2000,
+                                });
+                                setTimeout(function () {
+                                    window.location.href = "/Home/Index";
+                                }, 2000);
+                            }
+                        },
+                        error: function (d) {
+                            alert(d);
+                        }
+                    });
+                })
+            });
+        });
+    </script>
+}
+
